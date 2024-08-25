@@ -7,7 +7,7 @@ import dotenv from "dotenv";
 import express from "express";
 import { randomUUID } from "crypto";
 import { UserType } from "./types";
-import { User } from "./User";
+import { Contest } from "./Contest";
 
 const app = express();
 
@@ -20,24 +20,32 @@ const contestManager = new ContestManager();
 wss.on("connection", async (ws: WebSocket, req: Request) => {
   ws.on("error", console.error);
 
-  // const { userToken } = url.parse(req.url, true).query;
-
-  // const user = await extractUserId(userToken as string);
-
-  // if (!user) {
-  //   ws.close();
-  //   return;
-  // }
+  const { contestId } = url.parse(req.url, true).query;
+  if (!contestId) {
+    console.log("Contest ID not found");
+    return;
+  }
 
   const newUser: UserType = {
+    name: "user",
     id: randomUUID(),
-    name: "Random",
     socket: ws,
   };
 
-  contestManager.addUsers(new User(newUser));
+  contestManager.updateContest(newUser, contestId as string);
 
   ws.on("close", (data: string) => {
     contestManager.removeUser(data);
   });
+});
+
+app.post("/contest", (req, res) => {
+  const contestId = randomUUID();
+  const contest = new Contest(contestId);
+  contestManager.addContest(contest);
+  res.send({ contestId });
+});
+
+app.listen(3000, () => {
+  console.log("Server listening on port 3000");
 });
