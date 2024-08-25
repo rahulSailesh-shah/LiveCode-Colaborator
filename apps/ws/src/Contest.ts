@@ -1,13 +1,6 @@
-import { randomUUID } from "crypto";
-import { WebSocket } from "ws";
-import { connect } from "http2";
-import {
-  CODE_QUEUE,
-  SUBMISSION_RESULT,
-  SUBMISSION_TOKEN,
-  EXECUTING_CODE,
-} from "./messages";
+import { EXECUTING_CODE } from "./messages";
 import { UserType } from "./types";
+import { CodeExecution } from "./CodeExecution";
 
 export class Contest {
   public id: string;
@@ -23,7 +16,7 @@ export class Contest {
   }
 
   async submitCode(codeId: string) {
-    const message = {
+    let message = {
       type: EXECUTING_CODE,
       payload: {
         codeId,
@@ -35,6 +28,23 @@ export class Contest {
       ...(this.participant2 ? [this.participant2] : []),
     ];
     this.broadcast(message, participants);
+
+    const codeExeutor = new CodeExecution(this.code, codeId);
+    const result = await codeExeutor.createSubmission();
+    const output = result.stdout
+      ? Buffer.from(result.stdout, "base64").toString("utf-8")
+      : result.stderr
+        ? Buffer.from(result.stderr, "base64").toString("utf-8")
+        : "Error fetching output.";
+
+    const payloadMessage = {
+      type: "code_result",
+      payload: {
+        output,
+        contestId: this.id,
+      },
+    };
+    this.broadcast(payloadMessage, participants);
   }
 
   broadcast(message: any, users: UserType[]) {
