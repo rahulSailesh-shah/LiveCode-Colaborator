@@ -1,5 +1,6 @@
 import { WebSocketServer, WebSocket } from "ws";
 import { ContestManager } from "./ContestManager";
+import cors from "cors";
 
 import url from "url";
 // import { extractUserId } from "./auth";
@@ -10,6 +11,8 @@ import { UserType } from "./types";
 import { Contest } from "./Contest";
 
 const app = express();
+app.use(express.json());
+app.use(cors());
 
 dotenv.config();
 
@@ -43,7 +46,18 @@ app.post("/contest", (req, res) => {
   const contestId = randomUUID();
   const contest = new Contest(contestId);
   contestManager.addContest(contest);
-  res.send({ contestId });
+  res.send({ id: contestId });
+});
+
+app.get("/contest/:id", (req, res) => {
+  console.log("new request");
+  const contest = contestManager.getContest(req.params.id);
+  if (!contest) {
+    res.status(404).json({ error: "Contest not found" });
+    return;
+  }
+  console.log(contest.id);
+  res.send({ id: contest.id });
 });
 
 app.listen(3000, () => {

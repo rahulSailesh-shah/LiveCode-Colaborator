@@ -4,28 +4,43 @@ import * as Y from "yjs";
 import { WebrtcProvider } from "y-webrtc";
 import { MonacoBinding } from "y-monaco";
 import * as monaco from "monaco-editor";
+import { useParams } from "react-router-dom";
 
 function CodeEditor() {
   const editorRef = useRef<monaco.editor.IStandaloneCodeEditor | null>(null);
   const [socket, setSocket] = useState<WebSocket | null>(null);
+  const { id } = useParams();
 
   useEffect(() => {
-    // Initialize WebSocket connection
-    const ws = new WebSocket("ws://your-websocket-server-url");
-    setSocket(ws);
+    if (!id) return;
+    const ws = new WebSocket(`ws://localhost:8080/?contestId=${id}`);
+    ws.onopen = () => {
+      console.log("Connected to WebSocket server");
+      setSocket(ws);
+    };
+
+    ws.onmessage = (event) => {
+      const message = JSON.parse(event.data);
+      if (message.type === "executing_code") {
+        console.log("Executing code");
+      }
+      if (message.type === "code_result") {
+        console.log("Code result: ", message.payload);
+      }
+    };
 
     return () => {
       if (ws) {
         ws.close();
       }
     };
-  }, []);
+  }, [id]);
 
   const handleEditorDidMount: OnMount = (editor) => {
     editorRef.current = editor;
     const doc = new Y.Doc();
 
-    const provider = new WebrtcProvider("test-room", doc);
+    const provider = new WebrtcProvider(id!, doc);
     const type = doc.getText("monaco");
 
     if (!editorRef.current) {
@@ -38,14 +53,21 @@ function CodeEditor() {
       new Set([editorRef.current]),
       provider.awareness
     );
-
-    console.log(provider.awareness);
   };
 
   const handleSave = () => {
-    if (editorRef.current && socket) {
+    if (editorRef.current && socket && id) {
       const code = editorRef.current.getValue();
-      socket.send(JSON.stringify({ type: "save", content: code }));
+      socket.send(
+        JSON.stringify({
+          type: "code_submit",
+          payload: {
+            code,
+            codeId: "63",
+            contestId: id,
+          },
+        })
+      );
     } else {
       console.error("Editor or WebSocket not initialized");
     }

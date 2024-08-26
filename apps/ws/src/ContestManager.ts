@@ -15,6 +15,10 @@ export class ContestManager {
     console.log("TOTAL CONTESTS: ", this.contests.length);
   }
 
+  getContest(contestId: string) {
+    return this.contests.find((x) => x.id === contestId);
+  }
+
   updateContest(user: User, contestId: string) {
     const contest = this.contests.find((x) => x.id === contestId);
     if (!contest) {
@@ -30,15 +34,6 @@ export class ContestManager {
     // TODO: Logic to remove user if participant leaves and update status
   }
 
-  handleCodeSubmit(code: string, codeId: string, contestId: string) {
-    const contest = this.contests.find((x) => x.id === contestId);
-    if (!contest) {
-      console.log("You are not in a contest");
-      return;
-    }
-    contest.submitCode(code, codeId);
-  }
-
   handler(user: User) {
     user.socket.on("message", async (data) => {
       const message = JSON.parse(data.toString());
@@ -51,7 +46,12 @@ export class ContestManager {
           console.log("Invalid code submission");
           return;
         }
-        this.handleCodeSubmit(code, codeId, contestId);
+        const contest = this.contests.find((x) => x.id === contestId);
+        if (!contest) {
+          console.log("You are not in a contest");
+          return;
+        }
+        contest.submitCode(code, codeId);
       }
     });
   }
