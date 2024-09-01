@@ -8,6 +8,9 @@ import { useNavigate, useParams } from "react-router-dom";
 import { Button } from "./components/ui/button";
 import { CopyToClipboard } from "react-copy-to-clipboard";
 
+const SERVER_URL = "https://livecode-colaborator.onrender.com";
+const WEBSOCKET_URL = "wss://livecode-colaborator.onrender.com";
+
 function CodeEditor() {
   const editorRef = useRef<monaco.editor.IStandaloneCodeEditor | null>(null);
   const [socket, setSocket] = useState<WebSocket | null>(null);
@@ -25,23 +28,17 @@ function CodeEditor() {
         return;
       }
       try {
-        const response = await fetch(
-          // `https://livecode-colaborator.onrender.com/contest/${id}`
-          `http://localhost:8080/contest/${id}`
-        );
+        const response = await fetch(`${SERVER_URL}/contest/${id}`);
         if (!response.ok) {
-          console.error("Invalid contest ID");
           navigate("/");
           return;
         }
 
         ws = new WebSocket(
-          // `wss://livecode-colaborator.onrender.com/?contestId=${id}&userId=${userId}`
-          `ws://localhost:8080/?contestId=${id}&userId=${userId}`
+          `${WEBSOCKET_URL}/?contestId=${id}&userId=${userId}`
         );
 
         ws.onopen = () => {
-          console.log("Connected to WebSocket server");
           setSocket(ws);
         };
 
@@ -57,17 +54,15 @@ function CodeEditor() {
               setResult(message.payload.output);
               break;
             default:
-              console.log("Unhandled message:", message);
               break;
           }
         };
 
-        ws.onerror = (error) => {
-          console.log(`WebSocket error: ${error}`);
+        ws.onerror = () => {
           navigate("/");
         };
       } catch (error) {
-        console.error("Error setting up contest:", error);
+        console.log(error);
         navigate("/");
       }
     };
@@ -86,10 +81,7 @@ function CodeEditor() {
     const doc = new Y.Doc();
 
     const provider = new WebrtcProvider(id!, doc, {
-      signaling: [
-        // `wss://livecode-colaborator.onrender.com/?contestId=${id}&userId=${userId}`,
-        `ws://localhost:8080/?contestId=${id}&userId=${userId}`,
-      ],
+      signaling: [`${WEBSOCKET_URL}/?contestId=${id}&userId=${userId}`],
     });
     const type = doc.getText("monaco");
 
@@ -113,7 +105,6 @@ function CodeEditor() {
       id
     ) {
       const code = editorRef.current.getValue();
-      console.log("Sending code:", code);
       socket.send(
         JSON.stringify({
           type: "code_submit",
@@ -124,8 +115,6 @@ function CodeEditor() {
           },
         })
       );
-    } else {
-      console.error("Editor or WebSocket not initialized or not open");
     }
   };
 

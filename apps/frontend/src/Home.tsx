@@ -9,21 +9,19 @@ import {
 import { Input } from "@/components/ui/input";
 import { useState } from "react";
 
+const SERVER_URL = "https://livecode-colaborator.onrender.com";
+
 export default function Home() {
   const [roomId, setRoomId] = useState("");
 
   const handleCreateRoom = async () => {
     try {
-      const response = await fetch(
-        // "https://livecode-colaborator.onrender.com/contest",
-        "http://localhost:8080/contest",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
-      );
+      const response = await fetch(`${SERVER_URL}/contest`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
       if (response.ok) {
         const { id } = await response.json();
         const userId = Date.now().toString(36);
@@ -37,10 +35,12 @@ export default function Home() {
   const handleJoinRoom = async () => {
     try {
       console.log("object");
-      const response = await fetch(
-        // `https://livecode-colaborator.onrender.com/${roomId}`
-        `http://localhost:8080/contest/${roomId}`
-      );
+      const response = await fetch(`${SERVER_URL}/contest/${roomId}`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
       const res = await response.json();
       if (response.ok) {
         const userId = Date.now().toString(36);

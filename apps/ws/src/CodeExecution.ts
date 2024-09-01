@@ -23,7 +23,6 @@ export class CodeExecution {
       const languageId = parseInt(this.codeId);
       const response = await postSubmission(base64Code, languageId);
       const result = await this.pollSubmission(response.token);
-      console.log(result);
       return result;
     } catch (error) {
       console.log("CREATE SUBMISSION ERROR: ", error);
