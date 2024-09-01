@@ -6,6 +6,7 @@ import { MonacoBinding } from "y-monaco";
 import * as monaco from "monaco-editor";
 import { useNavigate, useParams } from "react-router-dom";
 import { Button } from "./components/ui/button";
+import { CopyToClipboard } from "react-copy-to-clipboard";
 
 function CodeEditor() {
   const editorRef = useRef<monaco.editor.IStandaloneCodeEditor | null>(null);
@@ -13,7 +14,7 @@ function CodeEditor() {
   const { id, userId } = useParams();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
-  const [result, setResult] = useState("fyhjr");
+  const [result, setResult] = useState("");
 
   useEffect(() => {
     let ws: WebSocket | null = null;
@@ -23,7 +24,6 @@ function CodeEditor() {
         navigate("/");
         return;
       }
-
       try {
         const response = await fetch(`http://localhost:3000/contest/${id}`);
         if (!response.ok) {
@@ -43,15 +43,18 @@ function CodeEditor() {
 
         ws.onmessage = (event) => {
           const message = JSON.parse(event.data);
-          console.log(message);
-          if (message.type === "executing_code") {
-            console.log("Executing code");
-            setLoading(true);
-          }
-          if (message.type === "code_result") {
-            console.log("Code result: ", message.payload);
-            setLoading(false);
-            setResult(message.payload.output);
+          switch (message.type) {
+            case "executing_code":
+              setLoading(true);
+              setResult("");
+              break;
+            case "code_result":
+              setLoading(false);
+              setResult(message.payload.output);
+              break;
+            default:
+              console.log("Unhandled message:", message);
+              break;
           }
         };
 
@@ -136,9 +139,14 @@ function CodeEditor() {
         <Button className="mx-4" onClick={handleSave} disabled={loading}>
           Run Code
         </Button>
-        <Button variant="outline" className="mx-4" onClick={handleSave}>
-          Copy Room ID
-        </Button>
+        <CopyToClipboard
+          text={id!}
+          onCopy={() => alert("Link copied to clipboard")}
+        >
+          <Button variant="outline" className="mx-4">
+            Copy Room ID
+          </Button>
+        </CopyToClipboard>
       </div>
     </div>
   );
