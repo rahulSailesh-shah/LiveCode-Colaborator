@@ -14,12 +14,15 @@ export default function Home() {
 
   const handleCreateRoom = async () => {
     try {
-      const response = await fetch("http://localhost:3000/contest", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
+      const response = await fetch(
+        "https://livecode-colaborator.onrender.com/contest",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
       if (response.ok) {
         const { id } = await response.json();
         const userId = Date.now().toString(36);
@@ -33,7 +36,9 @@ export default function Home() {
   const handleJoinRoom = async () => {
     try {
       console.log("object");
-      const response = await fetch(`http://localhost:3000/contest/${roomId}`);
+      const response = await fetch(
+        `https://livecode-colaborator.onrender.com/${roomId}`
+      );
       const res = await response.json();
       if (response.ok) {
         const userId = Date.now().toString(36);
