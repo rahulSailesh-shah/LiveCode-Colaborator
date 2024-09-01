@@ -1,5 +1,6 @@
 import { WebSocketServer, WebSocket } from "ws";
 import { ContestManager } from "./ContestManager";
+import { SignalingServer } from "./SignalHandler";
 import cors from "cors";
 
 import url from "url";
@@ -18,6 +19,7 @@ dotenv.config();
 const wss = new WebSocketServer({ port: 8080 });
 
 const contestManager = new ContestManager();
+const signalingServer = new SignalingServer();
 
 wss.on("connection", async (ws: WebSocket, req: Request) => {
   ws.on("error", console.error);
@@ -36,10 +38,16 @@ wss.on("connection", async (ws: WebSocket, req: Request) => {
 
   contestManager.updateContest(newUser, contestId as string);
 
+  // Handle signaling messages
+  signalingServer.handle(ws);
+
   ws.on("close", (data: string) => {
     contestManager.removeUser(data);
   });
 });
+
+// Start the heartbeat mechanism
+// signalingServer.startHeartbeat(wss);
 
 app.post("/contest", (req, res) => {
   const contestId = randomUUID();

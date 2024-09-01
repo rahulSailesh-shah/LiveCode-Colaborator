@@ -78,7 +78,7 @@ function CodeEditor() {
     const doc = new Y.Doc();
 
     const provider = new WebrtcProvider(id!, doc, {
-      signaling: ["ws://localhost:8787"],
+      signaling: [`ws://localhost:8080/?contestId=${id}&userId=${userId}`],
     });
     const type = doc.getText("monaco");
 
@@ -117,9 +117,6 @@ function CodeEditor() {
       console.error("Editor or WebSocket not initialized or not open");
     }
   };
-
-  console.log("LOADING", loading);
-  console.log("RESULT", result);
 
   return (
     <div className="w-screen h-screen p-4">
