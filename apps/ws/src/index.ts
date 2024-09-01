@@ -3,7 +3,7 @@ import { ContestManager } from "./ContestManager";
 import { SignalingServer } from "./SignalHandler";
 import cors from "cors";
 import express from "express";
-import https from "https";
+import http from "http";
 import url from "url";
 import dotenv from "dotenv";
 import { randomUUID } from "crypto";
@@ -16,7 +16,7 @@ app.use(cors());
 
 dotenv.config();
 
-const server = https.createServer(app);
+const server = http.createServer(app);
 const wss = new WebSocketServer({ server });
 
 const contestManager = new ContestManager();
