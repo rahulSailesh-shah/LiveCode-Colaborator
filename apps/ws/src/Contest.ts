@@ -41,7 +41,7 @@ export class Contest {
 
   broadcast(message: any) {
     this.participants.forEach((user) => {
-      console.log("Sending message to user: ", user.id);
+      console.log("Sending message to user: ", user.id, "\n", message);
       user.socket.send(JSON.stringify(message));
     });
   }

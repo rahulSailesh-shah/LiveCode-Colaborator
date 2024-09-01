@@ -5,12 +5,15 @@ import { WebrtcProvider } from "y-webrtc";
 import { MonacoBinding } from "y-monaco";
 import * as monaco from "monaco-editor";
 import { useNavigate, useParams } from "react-router-dom";
+import { Button } from "./components/ui/button";
 
 function CodeEditor() {
   const editorRef = useRef<monaco.editor.IStandaloneCodeEditor | null>(null);
   const [socket, setSocket] = useState<WebSocket | null>(null);
   const { id, userId } = useParams();
   const navigate = useNavigate();
+  const [loading, setLoading] = useState(false);
+  const [result, setResult] = useState("fyhjr");
 
   useEffect(() => {
     let ws: WebSocket | null = null;
@@ -40,11 +43,15 @@ function CodeEditor() {
 
         ws.onmessage = (event) => {
           const message = JSON.parse(event.data);
+          console.log(message);
           if (message.type === "executing_code") {
             console.log("Executing code");
+            setLoading(true);
           }
           if (message.type === "code_result") {
             console.log("Code result: ", message.payload);
+            setLoading(false);
+            setResult(message.payload.output);
           }
         };
 
@@ -70,7 +77,9 @@ function CodeEditor() {
     editorRef.current = editor;
     const doc = new Y.Doc();
 
-    const provider = new WebrtcProvider(id!, doc);
+    const provider = new WebrtcProvider(id!, doc, {
+      signaling: ["ws://localhost:8787"],
+    });
     const type = doc.getText("monaco");
 
     if (!editorRef.current) {
@@ -109,22 +118,31 @@ function CodeEditor() {
     }
   };
 
+  console.log("LOADING", loading);
+  console.log("RESULT", result);
+
   return (
-    <div className="flex flex-col h-screen">
-      <div className="flex-grow">
-        <Editor
-          className="h-full w-screen"
-          theme="vs-dark"
-          language="javascript"
-          onMount={handleEditorDidMount}
-        />
+    <div className="w-screen h-screen p-4">
+      <div className="flex space-x-4 h-[90%]">
+        <div className="w-3/5 h-full p-4 rounded-2xl bg-[#1f1f1f]">
+          <Editor
+            theme="vs-dark"
+            language="javascript"
+            onMount={handleEditorDidMount}
+          />
+        </div>
+        <div className="w-2/5 h-full p-4 rounded-2xl bg-red-100">
+          {loading ? "Loading..." : result}
+        </div>
       </div>
-      <button
-        onClick={handleSave}
-        className="px-4 py-2 text-base bg-green-500 text-white border-none cursor-pointer my-4 mx-10"
-      >
-        Save
-      </button>
+      <div className="mt-4 flex items-center justify-start">
+        <Button className="mx-4" onClick={handleSave} disabled={loading}>
+          Run Code
+        </Button>
+        <Button variant="outline" className="mx-4" onClick={handleSave}>
+          Copy Room ID
+        </Button>
+      </div>
     </div>
   );
 }
