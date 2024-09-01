@@ -4,7 +4,9 @@
   "main": "index.js",
   "license": "MIT",
   "scripts": {
-    "dev": "tsc -b && node dist/index.js"
+    "dev": "tsc -b && node dist/index.js",
+    "build": "tsc -b",
+    "start": "node dist/index.js"
   },
   "dependencies": {
     "@types/express": "^4.17.21",
