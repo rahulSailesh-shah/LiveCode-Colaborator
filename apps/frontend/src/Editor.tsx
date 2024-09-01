@@ -26,7 +26,8 @@ function CodeEditor() {
       }
       try {
         const response = await fetch(
-          `https://livecode-colaborator.onrender.com/contest/${id}`
+          // `https://livecode-colaborator.onrender.com/contest/${id}`
+          `http://localhost:8080/contest/${id}`
         );
         if (!response.ok) {
           console.error("Invalid contest ID");
@@ -35,7 +36,8 @@ function CodeEditor() {
         }
 
         ws = new WebSocket(
-          `wss://livecode-colaborator.onrender.com/?contestId=${id}&userId=${userId}`
+          // `wss://livecode-colaborator.onrender.com/?contestId=${id}&userId=${userId}`
+          `ws://localhost:8080/?contestId=${id}&userId=${userId}`
         );
 
         ws.onopen = () => {
@@ -60,7 +62,8 @@ function CodeEditor() {
           }
         };
 
-        ws.onerror = () => {
+        ws.onerror = (error) => {
+          console.log(`WebSocket error: ${error}`);
           navigate("/");
         };
       } catch (error) {
@@ -84,7 +87,8 @@ function CodeEditor() {
 
     const provider = new WebrtcProvider(id!, doc, {
       signaling: [
-        `wss://livecode-colaborator.onrender.com/?contestId=${id}&userId=${userId}`,
+        // `wss://livecode-colaborator.onrender.com/?contestId=${id}&userId=${userId}`,
+        `ws://localhost:8080/?contestId=${id}&userId=${userId}`,
       ],
     });
     const type = doc.getText("monaco");

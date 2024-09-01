@@ -15,7 +15,8 @@ export default function Home() {
   const handleCreateRoom = async () => {
     try {
       const response = await fetch(
-        "https://livecode-colaborator.onrender.com/contest",
+        // "https://livecode-colaborator.onrender.com/contest",
+        "http://localhost:8080/contest",
         {
           method: "POST",
           headers: {
@@ -37,7 +38,8 @@ export default function Home() {
     try {
       console.log("object");
       const response = await fetch(
-        `https://livecode-colaborator.onrender.com/${roomId}`
+        // `https://livecode-colaborator.onrender.com/${roomId}`
+        `http://localhost:8080/contest/${roomId}`
       );
       const res = await response.json();
       if (response.ok) {

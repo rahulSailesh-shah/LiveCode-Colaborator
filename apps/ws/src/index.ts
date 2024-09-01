@@ -2,10 +2,10 @@ import { WebSocketServer, WebSocket } from "ws";
 import { ContestManager } from "./ContestManager";
 import { SignalingServer } from "./SignalHandler";
 import cors from "cors";
-
+import express from "express";
+import https from "https";
 import url from "url";
 import dotenv from "dotenv";
-import express from "express";
 import { randomUUID } from "crypto";
 import { UserType } from "./types";
 import { Contest } from "./Contest";
@@ -16,15 +16,16 @@ app.use(cors());
 
 dotenv.config();
 
-const wss = new WebSocketServer({ port: 8080 });
+const server = https.createServer(app);
+const wss = new WebSocketServer({ server });
 
 const contestManager = new ContestManager();
 const signalingServer = new SignalingServer();
 
-wss.on("connection", async (ws: WebSocket, req: Request) => {
+wss.on("connection", async (ws: WebSocket, req: any) => {
   ws.on("error", console.error);
 
-  const { contestId, userId } = url.parse(req.url, true).query;
+  const { contestId, userId } = url.parse(req.url!, true).query;
   if (!contestId) {
     console.log("Contest ID not found");
     return;
@@ -41,13 +42,10 @@ wss.on("connection", async (ws: WebSocket, req: Request) => {
   // Handle signaling messages
   signalingServer.handle(ws);
 
-  ws.on("close", (data: string) => {
-    contestManager.removeUser(data);
+  ws.on("close", () => {
+    contestManager.removeUser(userId as string);
   });
 });
-
-// Start the heartbeat mechanism
-// signalingServer.startHeartbeat(wss);
 
 app.post("/contest", (req, res) => {
   const contestId = randomUUID();
@@ -65,6 +63,7 @@ app.get("/contest/:id", (req, res) => {
   res.send({ id: contest.id });
 });
 
-app.listen(8080, () => {
-  console.log("Server listening on port 8080");
+const PORT = process.env.PORT || 8080;
+server.listen(PORT, () => {
+  console.log(`Server listening on port ${PORT}`);
 });
