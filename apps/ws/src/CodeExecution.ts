@@ -39,7 +39,6 @@ export class CodeExecution {
         statusID = result.status.id;
         await new Promise((resolve) => setTimeout(resolve, 5000));
       }
-      console.log(result);
       return result;
     } catch (error) {
       console.log("POLL SUBMISSION ERROR: ", error);

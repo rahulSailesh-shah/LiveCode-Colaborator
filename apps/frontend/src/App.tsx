@@ -15,7 +15,7 @@ const App: React.FC = () => {
       <Routes>
         <Route path="/" element={<Home />} />
         <Route element={<ProtectedRoute />}>
-          <Route path="/room/:id" element={<CodeEditor />} />
+          <Route path="/room/:id/:userId" element={<CodeEditor />} />
         </Route>
       </Routes>
     </BrowserRouter>

@@ -25,8 +25,11 @@ export class ContestManager {
       console.log("Contest not found");
       return;
     }
-    contest.participants.push(user);
-    console.log(`USER : ${user.id} ADDED TO CONTEST: ${contestId}`);
+    const isUserInContest = contest.participants.find((x) => x.id === user.id);
+    if (!isUserInContest) {
+      console.log(`USER : ${user.id} ADDED TO CONTEST: ${contestId}`);
+      contest.participants.push(user);
+    }
     this.handler(user);
   }
 

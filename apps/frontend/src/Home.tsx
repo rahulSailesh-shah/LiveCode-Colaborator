@@ -20,8 +20,11 @@ export default function Home() {
           "Content-Type": "application/json",
         },
       });
-      const { id } = await response.json();
-      window.location.href = `/room/${id}`;
+      if (response.ok) {
+        const { id } = await response.json();
+        const userId = Date.now().toString(36);
+        window.location.href = `/room/${id}/${userId}`;
+      }
     } catch (error) {
       console.log(error);
     }
@@ -33,7 +36,8 @@ export default function Home() {
       const response = await fetch(`http://localhost:3000/contest/${roomId}`);
       const res = await response.json();
       if (response.ok) {
-        window.location.href = `/room/${res.id}`;
+        const userId = Date.now().toString(36);
+        window.location.href = `/room/${res.id}/${userId}`;
       }
     } catch (error) {
       console.log(error);

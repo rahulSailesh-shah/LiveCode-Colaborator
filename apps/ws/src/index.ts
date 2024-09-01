@@ -3,7 +3,6 @@ import { ContestManager } from "./ContestManager";
 import cors from "cors";
 
 import url from "url";
-// import { extractUserId } from "./auth";
 import dotenv from "dotenv";
 import express from "express";
 import { randomUUID } from "crypto";
@@ -23,7 +22,7 @@ const contestManager = new ContestManager();
 wss.on("connection", async (ws: WebSocket, req: Request) => {
   ws.on("error", console.error);
 
-  const { contestId } = url.parse(req.url, true).query;
+  const { contestId, userId } = url.parse(req.url, true).query;
   if (!contestId) {
     console.log("Contest ID not found");
     return;
@@ -31,7 +30,7 @@ wss.on("connection", async (ws: WebSocket, req: Request) => {
 
   const newUser: UserType = {
     name: "user",
-    id: randomUUID(),
+    id: userId as string,
     socket: ws,
   };
 
@@ -50,13 +49,11 @@ app.post("/contest", (req, res) => {
 });
 
 app.get("/contest/:id", (req, res) => {
-  console.log("new request");
   const contest = contestManager.getContest(req.params.id);
   if (!contest) {
     res.status(404).json({ error: "Contest not found" });
     return;
   }
-  console.log(contest.id);
   res.send({ id: contest.id });
 });
 

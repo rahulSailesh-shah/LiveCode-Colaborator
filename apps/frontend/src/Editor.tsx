@@ -4,37 +4,67 @@ import * as Y from "yjs";
 import { WebrtcProvider } from "y-webrtc";
 import { MonacoBinding } from "y-monaco";
 import * as monaco from "monaco-editor";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 
 function CodeEditor() {
   const editorRef = useRef<monaco.editor.IStandaloneCodeEditor | null>(null);
   const [socket, setSocket] = useState<WebSocket | null>(null);
-  const { id } = useParams();
+  const { id, userId } = useParams();
+  const navigate = useNavigate();
 
   useEffect(() => {
-    if (!id) return;
-    const ws = new WebSocket(`ws://localhost:8080/?contestId=${id}`);
-    ws.onopen = () => {
-      console.log("Connected to WebSocket server");
-      setSocket(ws);
+    let ws: WebSocket | null = null;
+
+    const setupContest = async () => {
+      if (!id || !userId) {
+        navigate("/");
+        return;
+      }
+
+      try {
+        const response = await fetch(`http://localhost:3000/contest/${id}`);
+        if (!response.ok) {
+          console.error("Invalid contest ID");
+          navigate("/");
+          return;
+        }
+
+        ws = new WebSocket(
+          `ws://localhost:8080/?contestId=${id}&userId=${userId}`
+        );
+
+        ws.onopen = () => {
+          console.log("Connected to WebSocket server");
+          setSocket(ws);
+        };
+
+        ws.onmessage = (event) => {
+          const message = JSON.parse(event.data);
+          if (message.type === "executing_code") {
+            console.log("Executing code");
+          }
+          if (message.type === "code_result") {
+            console.log("Code result: ", message.payload);
+          }
+        };
+
+        ws.onerror = () => {
+          navigate("/");
+        };
+      } catch (error) {
+        console.error("Error setting up contest:", error);
+        navigate("/");
+      }
     };
 
-    ws.onmessage = (event) => {
-      const message = JSON.parse(event.data);
-      if (message.type === "executing_code") {
-        console.log("Executing code");
-      }
-      if (message.type === "code_result") {
-        console.log("Code result: ", message.payload);
-      }
-    };
+    setupContest();
 
     return () => {
       if (ws) {
         ws.close();
       }
     };
-  }, [id]);
+  }, [id, navigate, userId]);
 
   const handleEditorDidMount: OnMount = (editor) => {
     editorRef.current = editor;
@@ -56,8 +86,14 @@ function CodeEditor() {
   };
 
   const handleSave = () => {
-    if (editorRef.current && socket && id) {
+    if (
+      editorRef.current &&
+      socket &&
+      socket.readyState === WebSocket.OPEN &&
+      id
+    ) {
       const code = editorRef.current.getValue();
+      console.log("Sending code:", code);
       socket.send(
         JSON.stringify({
           type: "code_submit",
@@ -69,7 +105,7 @@ function CodeEditor() {
         })
       );
     } else {
-      console.error("Editor or WebSocket not initialized");
+      console.error("Editor or WebSocket not initialized or not open");
     }
   };
 

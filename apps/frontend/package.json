@@ -24,6 +24,7 @@
     "react-router-dom": "^6.26.1",
     "tailwind-merge": "^2.5.2",
     "tailwindcss-animate": "^1.0.7",
+    "uuidv4": "^6.2.13",
     "y-monaco": "^0.1.6",
     "y-webrtc": "^10.3.0",
     "yjs": "^13.6.18"
