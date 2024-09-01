@@ -45,30 +45,42 @@ export default function Home() {
   };
 
   return (
-    <div className="h-screen w-screen flex items-center justify-center">
-      <Dialog>
-        <Button className="mx-4" onClick={handleCreateRoom}>
+    <div className="h-screen w-screen flex flex-col items-center  bg-slate-800">
+      <div className="my-20">
+        <h2 className="text-6xl mb-4 text-slate-50 font-semibold">
+          Welcome to LiveCode Collaborator
+        </h2>
+        <p className="text-2xl text-slate-300">
+          LiveCode Collaborator is a web-based collaborative code editor that
+          allows you to code in real-time with other developers.
+        </p>
+      </div>
+
+      <div className="flex justify-start items-center">
+        <Button variant="outline" className="mx-4" onClick={handleCreateRoom}>
           Create Room
         </Button>
-        <DialogTrigger asChild>
-          <Button variant="outline">Join Room</Button>
-        </DialogTrigger>
-        <DialogContent className="sm:max-w-[425px]">
-          <DialogHeader>
-            <DialogTitle>Enter Room ID</DialogTitle>
-          </DialogHeader>
-          <div className="flex items-center justify-center space-x-4">
-            <Input
-              id="name"
-              defaultValue="Pedro Duarte"
-              value={roomId}
-              onChange={(e) => setRoomId(e.target.value)}
-              className="col-span-3 flex-grow"
-            />
-            <Button onClick={handleJoinRoom}>Join Room</Button>
-          </div>
-        </DialogContent>
-      </Dialog>
+        <Dialog>
+          <DialogTrigger asChild>
+            <Button variant="outline">Join Room</Button>
+          </DialogTrigger>
+          <DialogContent className="sm:max-w-[425px]">
+            <DialogHeader>
+              <DialogTitle>Enter Room ID</DialogTitle>
+            </DialogHeader>
+            <div className="flex items-center justify-center space-x-4">
+              <Input
+                id="name"
+                defaultValue="Pedro Duarte"
+                value={roomId}
+                onChange={(e) => setRoomId(e.target.value)}
+                className="col-span-3 flex-grow"
+              />
+              <Button onClick={handleJoinRoom}>Join Room</Button>
+            </div>
+          </DialogContent>
+        </Dialog>
+      </div>
     </div>
   );
 }
