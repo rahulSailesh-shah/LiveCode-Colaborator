@@ -1,0 +1,42 @@
+name: Update Version on Merge
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  update-version:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: "16"
+
+      - name: Get changed files
+        id: changed-files
+        uses: tj-actions/changed-files@v35
+
+      - name: Update version for changed apps
+        run: |
+          for file in ${{ steps.changed-files.outputs.all_changed_files }}; do
+            app_dir=$(dirname $(dirname $file))
+            if [[ $app_dir == apps/* && -f $app_dir/package.json ]]; then
+              echo "Updating version for $app_dir"
+              npm version patch --prefix $app_dir
+            fi
+          done
+
+      - name: Commit and push changes
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git add -A
+          git commit -m "Bump version for changed apps" || echo "No changes to commit"
+          git push

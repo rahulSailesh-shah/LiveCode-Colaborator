@@ -8,6 +8,9 @@ interface Message {
   [key: string]: any;
 }
 
+/**
+ * SignalingServer class represents a server for handling signaling messages between clients.
+ */
 export class SignalingServer {
   private topics: Map<string, Set<WebSocket>> = new Map();
 
