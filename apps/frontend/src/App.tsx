@@ -3,6 +3,11 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Home from "./Home";
 import CodeEditor from "./Editor";
 
+/**
+ * App component
+ * @returns {React.FC} React functional component
+ */
+
 const App: React.FC = () => {
   return (
     <BrowserRouter>
