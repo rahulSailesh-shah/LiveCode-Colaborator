@@ -39,7 +39,7 @@ wss.on("connection", async (ws: WebSocket, req: any) => {
 
   contestManager.updateContest(newUser, contestId as string);
 
-  // Handle signaling messages
+  // Handle signaling messages from the client
   signalingServer.handle(ws);
 
   ws.on("close", () => {
