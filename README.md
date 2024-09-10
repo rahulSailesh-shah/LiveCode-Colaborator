@@ -1,81 +1,74 @@
-# Turborepo starter
+# LiveCode Collaborator
 
-This is an official starter Turborepo.
+LiveCode Collaborator is an online JavaScript coding IDE with real-time collaboration features. It allows multiple users to develop and execute code together in shared coding rooms, leveraging the power of WebSockets and WebRTC for seamless real-time interactions.
 
-## Using this example
+## Table of Contents
 
-Run the following command:
+- [Features](#features)
+- [Installation](#installation)
+- [Usage](#usage)
+- [Technology Stack](#technology-stack)
+- [Contributing](#contributing)
 
-```sh
-npx create-turbo@latest
-```
+## Features
 
-## What's inside?
+- **Real-time Collaboration**: Multiple users can code together in the same workspace simultaneously.
+- **JavaScript IDE**: Full-featured integrated development environment for JavaScript.
+- **Code Execution**: Run JavaScript code directly in the browser.
+- **Shared Coding Rooms**: Create or join coding rooms for collaborative projects.
+- **WebSocket Communication**: Ensures low-latency updates between collaborators.
+- **WebRTC Integration**: Enables peer-to-peer data exchange for improved performance.
 
-This Turborepo includes the following packages/apps:
+## Installation
 
-### Apps and Packages
+To set up LiveCode Collaborator locally, follow these steps:
 
-- `docs`: a [Next.js](https://nextjs.org/) app
-- `web`: another [Next.js](https://nextjs.org/) app
-- `@repo/ui`: a stub React component library shared by both `web` and `docs` applications
-- `@repo/eslint-config`: `eslint` configurations (includes `eslint-config-next` and `eslint-config-prettier`)
-- `@repo/typescript-config`: `tsconfig.json`s used throughout the monorepo
-
-Each package/app is 100% [TypeScript](https://www.typescriptlang.org/).
-
-### Utilities
-
-This Turborepo has some additional tools already setup for you:
-
-- [TypeScript](https://www.typescriptlang.org/) for static type checking
-- [ESLint](https://eslint.org/) for code linting
-- [Prettier](https://prettier.io) for code formatting
-
-### Build
-
-To build all apps and packages, run the following command:
+Clone the repository
 
 ```
-cd my-turborepo
-pnpm build
+git clone https://github.com/rahulSailesh-shah/LiveCode-Colaborator
 ```
 
-### Develop
-
-To develop all apps and packages, run the following command:
+Navigate to the project directory
 
 ```
-cd my-turborepo
-pnpm dev
+cd LiveCode-Colaborator
 ```
 
-### Remote Caching
-
-Turborepo can use a technique known as [Remote Caching](https://turbo.build/repo/docs/core-concepts/remote-caching) to share cache artifacts across machines, enabling you to share build caches with your team and CI/CD pipelines.
-
-By default, Turborepo will cache locally. To enable Remote Caching you will need an account with Vercel. If you don't have an account you can [create one](https://vercel.com/signup), then enter the following commands:
+Install dependencies
 
 ```
-cd my-turborepo
-npx turbo login
+npm install
 ```
 
-This will authenticate the Turborepo CLI with your [Vercel account](https://vercel.com/docs/concepts/personal-accounts/overview).
-
-Next, you can link your Turborepo to your Remote Cache by running the following command from the root of your Turborepo:
+Start the development server
 
 ```
-npx turbo link
+npm run dev
 ```
 
-## Useful Links
+## Usage
 
-Learn more about the power of Turborepo:
+1. Open your web browser and navigate to `http://localhost:5173`
+2. Create a new coding room or join an existing one using a shared room ID.
+3. Start coding! Your changes will be visible to all participants in real-time.
+4. Use the "Run" button to execute the JavaScript code and see the output.
 
-- [Tasks](https://turbo.build/repo/docs/core-concepts/monorepos/running-tasks)
-- [Caching](https://turbo.build/repo/docs/core-concepts/caching)
-- [Remote Caching](https://turbo.build/repo/docs/core-concepts/remote-caching)
-- [Filtering](https://turbo.build/repo/docs/core-concepts/monorepos/filtering)
-- [Configuration Options](https://turbo.build/repo/docs/reference/configuration)
-- [CLI Usage](https://turbo.build/repo/docs/reference/command-line-reference)
+## Technology Stack
+
+- **Frontend**: React.js.
+- **Backend**: Node.js with Express.js
+- **Real-time Communication**: WebSockets (Socket.io) and WebRTC
+- **Code Execution**: Sandboxed JavaScript execution environment
+- **Database**: MongoDB for storing user data and coding room information
+
+## Contributing
+
+We welcome contributions to LiveCode Collaborator! If you'd like to contribute, please follow these steps:
+
+1. Fork the repository
+2. Create a new branch (`git checkout -b feature/AmazingFeature`)
+3. Make your changes
+4. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
+5. Push to the branch (`git push origin feature/AmazingFeature`)
+6. Open a Pull Request
